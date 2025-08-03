@@ -30,13 +30,11 @@ export default function AdminPage() {
   const [editLoading, setEditLoading] = useState(false);
   const router = useRouter();
 
-  // ---- Admin Check ----
   useEffect(() => {
     const isAdmin = localStorage.getItem("admin-auth");
     if (!isAdmin) router.push("/admin/login");
   }, [router]);
 
-  // ---- Fetch Products ----
   const fetchProducts = async () => {
     try {
       const res = await axios.get("/api/products");
@@ -51,7 +49,6 @@ export default function AdminPage() {
     fetchProducts();
   }, []);
 
-  // ---- Convert File to Base64 ----
   const toBase64 = (file: File) =>
     new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -60,7 +57,6 @@ export default function AdminPage() {
       reader.onerror = (error) => reject(error);
     });
 
-  // ---- Add Product ----
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
@@ -87,7 +83,6 @@ export default function AdminPage() {
     }
   };
 
-  // ---- Delete Product ----
   const handleDelete = async (id: string) => {
     try {
       await axios.delete(`/api/products/${id}`);
@@ -99,7 +94,6 @@ export default function AdminPage() {
     }
   };
 
-  // ---- Update Product ----
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;

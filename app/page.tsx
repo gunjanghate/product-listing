@@ -5,16 +5,23 @@ import ProductCard from "@/components/ProductCard";
 import { ShoppingBag, Package } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useRouter } from 'next/navigation';
+
 export default function HomePage() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
+  const router = useRouter();
 
   const fetchProducts = async () => {
+    setLoading(true);
     try {
       const res = await axios.get("/api/products");
       setProducts(res.data);
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch products");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,14 +52,27 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <Package className="h-5 w-5 text-blue-600" />
               <span className="text-gray-700 font-medium">
-                {products.length === 0 ? "No products" : `${products.length} ${products.length === 1 ? 'Product' : 'Products'} Available`}
+                {loading
+                  ? "Loading inventory..."
+                  : products.length === 0
+                  ? "No products"
+                  : `${products.length} ${products.length === 1 ? 'Product' : 'Products'} Available`}
               </span>
             </div>
-
           </div>
         </div>
 
-        {products.length === 0 ? (
+        {loading ? (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 flex flex-col items-center justify-center">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6 animate-pulse">
+              <Package className="h-12 w-12 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Loading Inventory...</h3>
+            <p className="text-gray-500 mb-6 max-w-md text-center">
+              Please wait while we fetch the latest products for you.
+            </p>
+          </div>
+        ) : products.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-12">
             <div className="text-center">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -65,9 +85,11 @@ export default function HomePage() {
               <div className="flex justify-center">
                 <button
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  disabled
+                  onClick={()=>{
+                    router.push('/admin');
+                  }}
                 >
-                  Notify Me When Available
+                  If you are admin, start adding products
                 </button>
               </div>
             </div>
