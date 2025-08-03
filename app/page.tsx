@@ -1,24 +1,26 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import ProductCard from "@/components/ProductCard";
-import { ShoppingBag, Package, Filter, Search } from "lucide-react";
+import { ShoppingBag, Package } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+export default function HomePage() {
+  const [products, setProducts] = useState([]);
 
-async function getProducts() {
-  try {
-    const res = await fetch(`http://localhost:3000/api/products`, {
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      console.error(`Failed to fetch products: ${res.status} ${res.statusText}`);
-      return [];
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get("/api/products");
+      setProducts(res.data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch products");
     }
-    return await res.json();
-  } catch (error: any) {
-    console.error("Unexpected error fetching products:", error);
-    return [];
-  }
-}
+  };
 
-export default async function HomePage() {
-  const products = await getProducts();
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
